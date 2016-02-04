@@ -91,12 +91,16 @@ module Globalize
         end
 
         def create_translations_index
-          connection.add_index(
-            translations_table_name,
-            "#{table_name.sub(/^#{table_name_prefix}/, "").singularize}_id",
-            :name => translation_index_name
-          )
-          # index for select('DISTINCT locale') call in translation.rb
+          begin
+            connection.add_index(
+              translations_table_name,
+              "#{table_name.sub(/^#{table_name_prefix}/, "").singularize}_id",
+              :name => translation_index_name
+            )
+          rescue ArgumentError => e
+            puts e.message
+            # index for select('DISTINCT locale') call in translation.rb
+          end
           connection.add_index(
             translations_table_name,
             :locale,
